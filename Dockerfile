@@ -37,16 +37,18 @@ RUN wget https://download.blender.org/release/Blender5.1/blender-5.1.2-linux-x64
     ln -s /opt/blender-5.1.2-linux-x64/blender /usr/local/bin/blender && \
     rm /tmp/blender.tar.xz
 
-# 4. Actualizar pip, instalar PyTorch oficial para CUDA 12.1 y luego Nerfstudio
+# 4. Instalar Nerfstudio, JupyterLab y supervisor (Usando el Python del entorno base de PyTorch)
 RUN pip3 install --no-cache-dir --upgrade pip && \
     pip3 install --no-cache-dir torchao --index-url https://download.pytorch.org/whl/cu121 && \
     pip3 install --no-cache-dir nerfstudio jupyterlab supervisor
-    
-# 5. Configurar el script de arranque maestro para encender TODO al mismo tiempo
-RUN echo '[supervisord]\nnodaemon=true\n\n[program:jupyter]\ncommand=jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token="" --NotebookApp.password=""\nautorestart=true\n\n[program:vnc]\ncommand=vncserver :1 -geometry 1920x1080 -depth 24 -rfbport 5901 -localhost no -SecurityTypes None\nautorestart=true\n\n[program:novnc]\ncommand=websockify --web /usr/share/novnc/ 6080 localhost:5901\nautorestart=true' > /etc/supervisord.conf
+
+WORKDIR /workspace
+
+# 5. Configurar el script de arranque maestro con las rutas de binarios y comandos corregidos
+RUN echo '[supervisord]\nnodaemon=true\n\n[program:jupyter]\ncommand=/usr/local/bin/jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token="" --NotebookApp.password=""\nautorestart=true\n\n[program:vnc]\ncommand=tigervncserver :1 -geometry 1920x1080 -depth 24 -rfbport 5901 -localhost no -SecurityTypes None\nautorestart=true\n\n[program:novnc]\ncommand=websockify --web /usr/share/novnc/ 6080 localhost:5901\nautorestart=true' > /etc/supervisord.conf
 
 # Lanzar el gestor de servicios globales
-CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["/usr/local/bin/supervisord", "-c", "/etc/supervisord.conf"]
 
 # Apuntar por defecto al espacio de trabajo persistente y estándar de RunPod
 WORKDIR /workspace
