@@ -44,11 +44,8 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
 
 WORKDIR /workspace
 
-# 5. Configurar el script de arranque maestro con las rutas de binarios y comandos corregidos
-RUN echo '[supervisord]\nnodaemon=true\n\n[program:jupyter]\ncommand=/usr/local/bin/jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token="" --NotebookApp.password=""\nautorestart=true\n\n[program:vnc]\ncommand=tigervncserver :1 -geometry 1920x1080 -depth 24 -rfbport 5901 -localhost no -SecurityTypes None\nautorestart=true\n\n[program:novnc]\ncommand=websockify --web /usr/share/novnc/ 6080 localhost:5901\nautorestart=true' > /etc/supervisord.conf
+# 5. Configurar el script de arranque maestro con comandos globales nativos
+RUN echo '[supervisord]\nnodaemon=true\n\n[program:jupyter]\ncommand=jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token="" --NotebookApp.password=""\nautorestart=true\n\n[program:vnc]\ncommand=tigervncserver :1 -geometry 1920x1080 -depth 24 -rfbport 5901 -localhost no -SecurityTypes None\nautorestart=true\n\n[program:novnc]\ncommand=websockify --web /usr/share/novnc/ 6080 localhost:5901\nautorestart=true' > /etc/supervisord.conf
 
-# Lanzar el gestor de servicios globales
-CMD ["/usr/local/bin/supervisord", "-c", "/etc/supervisord.conf"]
-
-# Apuntar por defecto al espacio de trabajo persistente y estándar de RunPod
-WORKDIR /workspace
+# Lanzar el gestor de servicios usando el comando global directo
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
