@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     cmake ninja-build build-essential g++ git wget curl unzip \
     libxrender1 libxi6 libgl1-mesa-glx libglib2.0-0 libsm6 libice6 libxext6 libxkbcommon0 \
-    xfce4 xfce4-goodies dbus-x11 x11-xserver-utils tigervnc-standalone-server tigervnc-common novnc websockify \
+    xserver-xorg xfce4 xfce4-goodies dbus-x11 x11-xserver-utils tigervnc-standalone-server tigervnc-common novnc websockify \
     && wget https://sourceforge.net/projects/virtualgl/files/3.1.1/virtualgl_3.1.1_amd64.deb -O /tmp/vgl.deb \
     && dpkg -i /tmp/vgl.deb || apt-get -f install -y \
     && rm /tmp/vgl.deb \
@@ -31,9 +31,13 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
 
 WORKDIR /workspace
 
-# 5. Configurar VNC xstartup y script maestro para levantar SOLO servicios visuales
-RUN mkdir -p /root/.vnc && echo '#!/bin/bash\nstartxfce4 &' > /root/.vnc/xstartup && chmod +x /root/.vnc/xstartup
+# 5. Configurar VNC y script maestro con limpieza profunda de bloqueos
+RUN mkdir -p /root/.vnc && \
+    echo '#!/bin/bash\nexport XKL_XMODMAP_DISABLE=1\nstartxfce4 &' > /root/.vnc/xstartup && \
+    chmod +x /root/.vnc/xstartup
 
-RUN echo '[supervisord]\nnodaemon=true\n\n[program:vnc]\ncommand=/bin/bash -c "rm -f /tmp/.X1-lock /tmp/.X11-unix/X1 && tigervncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None -fg"\nautorestart=true\n\n[program:novnc]\ncommand=novnc_proxy --vnc localhost:5901 --listen 6080\nautorestart=true' > /etc/supervisord.conf
+RUN echo '[supervisord]\nnodaemon=true\n\n[program:vnc]\ncommand=/bin/bash -c "rm -rf /tmp/.X1-lock /tmp/.X11-unix/X1 && tigervncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None -fg"\nautorestart=true\n\n[program:novnc]\ncommand=novnc_proxy --vnc localhost:5901 --listen 6080\nautorestart=true' > /etc/supervisord.conf
 
+# Lanzar como root absoluto para evitar bloqueos de permisos de NVIDIA
+USER root
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
