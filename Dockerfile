@@ -31,10 +31,10 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
 
 WORKDIR /workspace
 
-# 5. Configurar VNC xstartup y script maestro de supervisord
+# 5. Configurar VNC xstartup y script maestro de supervisord con rutas absolutas e indicadores de frente
 RUN mkdir -p /root/.vnc && echo '#!/bin/bash\nstartxfce4 &' > /root/.vnc/xstartup && chmod +x /root/.vnc/xstartup
 
-RUN echo '[supervisord]\nnodaemon=true\n\n[program:jupyter]\ncommand=jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --ServerApp.token="" --ServerApp.password=""\nautorestart=true\n\n[program:vnc]\ncommand=tigervncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None\nautorestart=true\n\n[program:novnc]\ncommand=/usr/share/novnc/utils/novnc_proxy --vnc localhost:5901 --listen 6080\nautorestart=true' > /etc/supervisord.conf
+RUN echo '[supervisord]\nnodaemon=true\n\n[program:jupyter]\ncommand=/opt/conda/bin/jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --ServerApp.token="" --ServerApp.password=""\nautorestart=true\n\n[program:vnc]\ncommand=/bin/bash -c "rm -f /tmp/.X1-lock /tmp/.X11-unix/X1 && tigervncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None -fg"\nautorestart=true\n\n[program:novnc]\ncommand=novnc_proxy --vnc localhost:5901 --listen 6080\nautorestart=true' > /etc/supervisord.conf
 
 # Lanzar el gestor de servicios global
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
