@@ -40,10 +40,8 @@ RUN wget https://download.blender.org/release/Blender5.1/blender-5.1.2-linux-x64
 # 4. Actualizar pip, instalar PyTorch oficial para CUDA 12.1 y luego Nerfstudio
 RUN pip3 install --no-cache-dir --upgrade pip && \
     pip3 install --no-cache-dir torchao --index-url https://download.pytorch.org/whl/cu121 && \
-    pip3 install --no-cache-dir nerfstudio
-    pip3 install --no-cache-dir jupyterlab
-    pip3 install --no-cache-dir supervisor
-
+    pip3 install --no-cache-dir nerfstudio jupyterlab supervisor
+    
 # 5. Configurar el script de arranque maestro para encender TODO al mismo tiempo
 RUN echo '[supervisord]\nnodaemon=true\n\n[program:jupyter]\ncommand=jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token="" --NotebookApp.password=""\nautorestart=true\n\n[program:vnc]\ncommand=vncserver :1 -geometry 1920x1080 -depth 24 -rfbport 5901 -localhost no -SecurityTypes None\nautorestart=true\n\n[program:novnc]\ncommand=websockify --web /usr/share/novnc/ 6080 localhost:5901\nautorestart=true' > /etc/supervisord.conf
 
