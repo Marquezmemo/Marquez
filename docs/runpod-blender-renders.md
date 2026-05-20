@@ -6,6 +6,12 @@ Imagen Docker:
 marquezmemo/blender-renders:latest
 ```
 
+Version incluida:
+
+```text
+Blender 5.1.2
+```
+
 Puertos:
 
 ```text
@@ -34,6 +40,18 @@ Volumen persistente:
 /workspace
 /home
 ```
+
+Archivos:
+
+- Usa `/workspace` para subir `.blend`, `.ply`, `.splat`, texturas y renders.
+- El panel lateral de Kasm permite subir y descargar archivos desde el navegador.
+- Tambien queda instalado `xfce4-terminal` para abrir una terminal dentro del escritorio.
+
+Viewport remoto:
+
+- En Blender activa `Edit > Preferences > Input > Emulate 3 Button Mouse`.
+- Con eso puedes rotar vista con `Alt + click izquierdo` y arrastrar.
+- Para cambiar entre ventanas de Blender, usa `Alt + Tab` dentro del escritorio remoto o minimiza la ventana de render desde la barra superior.
 
 Notas:
 
