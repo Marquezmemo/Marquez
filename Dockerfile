@@ -1,5 +1,5 @@
 # Usamos la base oficial de desarrollo de NVIDIA con CUDA 12.1 compatible globalmente
-FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+FROM pytorch/pytorch:2.2.1-cuda12.1-cudnn8-devel
 
 # Configurar entorno no interactivo para evitar bloqueos en la instalación
 USER root
@@ -39,7 +39,6 @@ RUN wget https://download.blender.org/release/Blender4.2/blender-4.2.0-linux-x64
 
 # 4. Actualizar pip, instalar PyTorch oficial para CUDA 12.1 y luego Nerfstudio
 RUN pip3 install --no-cache-dir --upgrade pip && \
-    pip3 install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu121 && \
     pip3 install --no-cache-dir torchao --index-url https://download.pytorch.org/whl/cu121 && \
     pip3 install --no-cache-dir nerfstudio
 
