@@ -17,15 +17,15 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     unzip \
-    # Librerías X11/Mesa requeridas para que herramientas visuales corran headless en el servidor
+    # Librerías X11/Mesa requeridas para herramientas visuales (Corregido paquete de teclado)
     libxrender1 \
     libxi6 \
-    libxkf0 \
     libgl1-mesa-glx \
     libglib2.0-0 \
     libsm6 \
     libice6 \
     libxext6 \
+    libxkbcommon0 \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalar COLMAP de manera directa vía paquetes del sistema
