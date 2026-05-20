@@ -21,9 +21,12 @@ PGID=1000
 TZ=America/Mexico_City
 TITLE=Blender Renders
 SELKIES_UI_TITLE=Blender Renders
-AUTO_GPU=true
+PIXELFLUX_WAYLAND=false
+AUTO_GPU=false
+SELKIES_USE_CPU=true
 NVIDIA_VISIBLE_DEVICES=all
 NVIDIA_DRIVER_CAPABILITIES=all
+CUSTOM_USER=<tu-usuario>
 PASSWORD=<tu-password>
 ```
 
@@ -36,7 +39,7 @@ Volumen persistente:
 Notas:
 
 - Usa GPU NVIDIA en RunPod, idealmente RTX 3090 o RTX 4090.
-- Abre el escritorio desde el proxy web de RunPod usando el puerto `3000`.
-- No pongas el password dentro del Dockerfile ni del repositorio. Configuralo como variable del template.
+- Abre primero el puerto `3000`. Si queda en blanco, prueba el puerto `3001`.
+- No pongas usuario ni password dentro del Dockerfile ni del repositorio. Configuralos como variables del template.
 - Esta imagen esta pensada para confirmar rapido que Blender abre en navegador. La imagen de entrenamiento de Gaussian Splatting debe ir separada en `marquezmemo/entorno-gs`.
 - Importante: esta base es ideal para validar escritorio remoto. Si Cycles no detecta CUDA/OptiX dentro de RunPod, la siguiente version debe usar una base NVIDIA/OpenGL hecha especificamente para render GPU.

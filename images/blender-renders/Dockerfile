@@ -15,7 +15,9 @@ ENV TZ=America/Mexico_City \
     TITLE="Blender Renders" \
     SELKIES_UI_TITLE="Blender Renders" \
     SELKIES_FRAMERATE="30-60" \
-    AUTO_GPU=true \
+    PIXELFLUX_WAYLAND=false \
+    AUTO_GPU=false \
+    SELKIES_USE_CPU=true \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=all
 
