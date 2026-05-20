@@ -13,6 +13,6 @@ ENV TZ=America/Mexico_City \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=all
 
-EXPOSE 3000 6901
+EXPOSE 6901
 
 VOLUME ["/workspace", "/home"]
