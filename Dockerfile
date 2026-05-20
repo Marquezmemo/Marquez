@@ -5,27 +5,14 @@ FROM pytorch/pytorch:2.2.1-cuda12.1-cudnn8-devel
 USER root
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 1. Instalar Python, instaladores, compiladores avanzados y utilerías gráficas
+# 1. Instalar herramientas, dependencias gráficas, Escritorio y VirtualGL
 RUN apt-get update && apt-get install -y \
-    python3-pip \
-    python3-dev \
-    cmake \
-    ninja-build \
-    build-essential \
-    g++ \
-    git \
-    wget \
-    curl \
-    unzip \
-    # Librerías X11/Mesa requeridas para herramientas visuales (Corregido paquete de teclado)
-    libxrender1 \
-    libxi6 \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    libsm6 \
-    libice6 \
-    libxext6 \
-    libxkbcommon0 \
+    cmake ninja-build build-essential g++ git wget curl unzip \
+    libxrender1 libxi6 libgl1-mesa-glx libglib2.0-0 libsm6 libice6 libxext6 libxkbcommon0 \
+    xfce4 xfce4-goodies dbus-x11 x11-xserver-utils tigervnc-standalone-server tigervnc-common novnc websockify \
+    && wget https://sourceforge.net/projects/virtualgl/files/3.1.1/virtualgl_3.1.1_amd64.deb -O /tmp/vgl.deb \
+    && dpkg -i /tmp/vgl.deb || apt-get -f install -y \
+    && rm /tmp/vgl.deb \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalar COLMAP de manera directa vía paquetes del sistema
@@ -44,8 +31,10 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
 
 WORKDIR /workspace
 
-# 5. Configurar el script de arranque maestro con comandos globales nativos
-RUN echo '[supervisord]\nnodaemon=true\n\n[program:jupyter]\ncommand=jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token="" --NotebookApp.password=""\nautorestart=true\n\n[program:vnc]\ncommand=tigervncserver :1 -geometry 1920x1080 -depth 24 -rfbport 5901 -localhost no -SecurityTypes None\nautorestart=true\n\n[program:novnc]\ncommand=websockify --web /usr/share/novnc/ 6080 localhost:5901\nautorestart=true' > /etc/supervisord.conf
+# 5. Configurar VNC xstartup y script maestro de supervisord
+RUN mkdir -p /root/.vnc && echo '#!/bin/bash\nstartxfce4 &' > /root/.vnc/xstartup && chmod +x /root/.vnc/xstartup
 
-# Lanzar el gestor de servicios usando el comando global directo
+RUN echo '[supervisord]\nnodaemon=true\n\n[program:jupyter]\ncommand=jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --ServerApp.token="" --ServerApp.password=""\nautorestart=true\n\n[program:vnc]\ncommand=tigervncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None\nautorestart=true\n\n[program:novnc]\ncommand=/usr/share/novnc/utils/novnc_proxy --vnc localhost:5901 --listen 6080\nautorestart=true' > /etc/supervisord.conf
+
+# Lanzar el gestor de servicios global
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
