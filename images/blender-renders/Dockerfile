@@ -22,7 +22,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     file \
+    libvulkan1 \
+    mesa-vulkan-drivers \
     thunar \
+    vulkan-tools \
     wget \
     xfce4-terminal \
     xz-utils \
@@ -36,7 +39,8 @@ RUN set -eux; \
     tar -xf /tmp/blender.tar.xz -C /opt; \
     rm /tmp/blender.tar.xz; \
     ln -sf "/opt/blender-${BLENDER_VERSION}-linux-x64/blender" /usr/local/bin/blender; \
-    blender --version
+    ln -sf "/opt/blender-${BLENDER_VERSION}-linux-x64/blender" /usr/bin/blender; \
+    test -x "/opt/blender-${BLENDER_VERSION}-linux-x64/blender"
 
 EXPOSE 6901
 
