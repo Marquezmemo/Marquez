@@ -6,6 +6,12 @@ Imagen Docker:
 marquezmemo/blender-renders:latest
 ```
 
+Imagen espejo en GitHub Container Registry:
+
+```text
+ghcr.io/marquezmemo/marquez/blender-renders:latest
+```
+
 Version incluida:
 
 ```text
@@ -59,6 +65,7 @@ Notas:
 
 - Usa GPU NVIDIA en RunPod, idealmente RTX 3090 o RTX 4090.
 - Abre el puerto `6901`.
+- Si Docker Hub marca limite de pulls, usa la imagen espejo `ghcr.io/marquezmemo/marquez/blender-renders:latest`.
 - No pongas usuario ni password dentro del Dockerfile ni del repositorio. Configuralos como variables del template.
 - Esta imagen esta pensada para confirmar rapido que Blender abre en navegador. La imagen de entrenamiento de Gaussian Splatting debe ir separada en `marquezmemo/entorno-gs`.
 - Si el login muestra valores por defecto, prueba `kasm_user` como usuario y `password` como password. Luego cambia el password desde las variables del template.
