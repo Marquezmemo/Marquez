@@ -1,2 +1,6 @@
 *
 !Dockerfile
+!blender-wrapper.sh
+!Blender.desktop
+!Terminal.desktop
+!Workspace.desktop

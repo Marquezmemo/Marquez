@@ -46,6 +46,8 @@ Archivos:
 - Usa `/workspace` para subir `.blend`, `.ply`, `.splat`, texturas y renders.
 - El panel lateral de Kasm permite subir y descargar archivos desde el navegador.
 - Tambien queda instalado `xfce4-terminal` para abrir una terminal dentro del escritorio.
+- El escritorio incluye accesos directos para Blender 5.1.2, Terminal y Workspace.
+- Si Blender no abre, revisa `/workspace/logs/blender-startup.log`.
 
 Viewport remoto:
 

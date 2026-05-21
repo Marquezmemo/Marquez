@@ -31,6 +31,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
+COPY blender-wrapper.sh /usr/local/bin/blender
+COPY Blender.desktop Terminal.desktop Workspace.desktop /home/kasm-user/Desktop/
+
 RUN set -eux; \
     wget --progress=dot:giga \
       "https://download.blender.org/release/Blender${BLENDER_MAJOR_MINOR}/blender-${BLENDER_VERSION}-linux-x64.tar.xz" \
@@ -38,8 +41,10 @@ RUN set -eux; \
     rm -rf /opt/blender-*; \
     tar -xf /tmp/blender.tar.xz -C /opt; \
     rm /tmp/blender.tar.xz; \
-    ln -sf "/opt/blender-${BLENDER_VERSION}-linux-x64/blender" /usr/local/bin/blender; \
-    ln -sf "/opt/blender-${BLENDER_VERSION}-linux-x64/blender" /usr/bin/blender; \
+    chmod +x /usr/local/bin/blender; \
+    ln -sf /usr/local/bin/blender /usr/bin/blender; \
+    chmod +x /home/kasm-user/Desktop/*.desktop; \
+    chown -R kasm-user:kasm-user /home/kasm-user/Desktop; \
     test -x "/opt/blender-${BLENDER_VERSION}-linux-x64/blender"
 
 USER kasm-user

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Workspace
+Exec=thunar /workspace
+Icon=folder
+Terminal=false
+Categories=System;FileManager;
