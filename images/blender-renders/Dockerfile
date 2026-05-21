@@ -42,6 +42,8 @@ RUN set -eux; \
     ln -sf "/opt/blender-${BLENDER_VERSION}-linux-x64/blender" /usr/bin/blender; \
     test -x "/opt/blender-${BLENDER_VERSION}-linux-x64/blender"
 
+USER kasm-user
+
 EXPOSE 6901
 
 VOLUME ["/workspace", "/home"]
