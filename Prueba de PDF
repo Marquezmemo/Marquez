@@ -1,0 +1,62 @@
+from weasyprint import HTML
+
+html_content = """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <style>
+        @page { size: A4; margin: 15mm; background-color: #fdfbf7; }
+        body { font-family: 'Helvetica', sans-serif; color: #333; line-height: 1.6; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 25px; border-left: 4px solid #3498db; padding-left: 10px; }
+        .box { background: #fff; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        code { background: #eee; padding: 2px 4px; font-family: monospace; }
+        ul { margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Arquitectura de Pipeline: Gaussian Splatting Distribuido</h1>
+    
+    <h2>1. Visión General</h2>
+    <p>Este sistema permite operar una estación de trabajo de alto rendimiento mediante la fragmentación de procesos en contenedores especializados, gestionados desde una terminal remota (SSH).</p>
+    
+    <h2>2. Estrategia de Infraestructura</h2>
+    <ul>
+        <li><strong>Imagen Base:</strong> Espejo privado en GitHub (GHCR) a partir de template con Parsec/NVIDIA.</li>
+        <li><strong>Volúmenes Persistentes (Estructura):</strong>
+            <ul>
+                <li><strong>Volumen A (Entrenamiento):</strong> <code>/workspace/data/raw</code>, <code>/workspace/data/ply</code>, <code>/workspace/venv</code>.</li>
+                <li><strong>Volumen B (Blender):</strong> <code>/workspace/blender_bin</code>, <code>/workspace/blender_config</code> (con symlink), <code>/workspace/projects</code>.</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h2>3. Protocolo de Ejecución (SSH + Tmux)</h2>
+    <div class="box">
+        <strong>Paso A:</strong> Acceso <code>ssh root@ip-del-pod</code>.<br>
+        <strong>Paso B:</strong> Iniciar sesión <code>tmux new -s workflow</code>.<br>
+        <strong>Paso C:</strong> Ventana 1: Entrenamiento GS / Ventana 2: Blender / Ventana 3: Control.<br>
+        <strong>Paso D:</strong> Liberar el demonio (Manual): <code>rclone sync /workspace/data_output/ remote:Cloud_Folder</code>.
+    </div>
+    
+    <h2>4. Gestión de Imágenes (Soberanía)</h2>
+    <p>Comandos para asegurar tu imagen:</p>
+    <code>docker pull [imagen-origen]</code><br>
+    <code>docker tag [imagen-origen] ghcr.io/[usuario]/[imagen-propia]:latest</code><br>
+    <code>docker push ghcr.io/[usuario]/[imagen-propia]:latest</code>
+    
+    <h2>5. Checklist de Calidad</h2>
+    <ul>
+        <li>No usar Jupyter. Todo vía terminal.</li>
+        <li>Limpieza manual mediante script para evitar errores.</li>
+        <li>Verificación de GPU (4090) vía <code>nvidia-smi</code> al iniciar.</li>
+    </ul>
+</body>
+</html>
+"""
+
+HTML(string=html_content).write_pdf("pipeline_gaussian_splatting_v1.pdf")
+"""
+
+Your PDF file is ready
+[file-tag: pipeline_gaussian_splatting_v1]
