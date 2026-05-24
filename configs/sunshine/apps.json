@@ -1,0 +1,18 @@
+{
+  "env": {
+    "DISPLAY": ":0"
+  },
+  "apps": [
+    {
+      "name": "Blender 5.1.2",
+      "cmd": "blender",
+      "detached": [
+        "blender"
+      ]
+    },
+    {
+      "name": "Desktop",
+      "cmd": "openbox-session"
+    }
+  ]
+}

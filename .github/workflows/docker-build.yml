@@ -8,19 +8,30 @@ on:
       - master
     paths:
       - ".github/workflows/docker-build.yml"
+      - "configs/**"
       - "images/**"
+      - "scripts/**"
 
 concurrency:
   group: docker-build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-blender-renders:
-    name: Build blender-renders
+  build:
+    name: Build ${{ matrix.image }}
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: blender-workstation
+            dockerfile: images/blender-workstation/Dockerfile
+          - image: gs-training
+            dockerfile: images/gs-training/Dockerfile
 
     steps:
       - name: Checkout
@@ -59,23 +70,24 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/blender-renders
-            ghcr.io/${{ github.repository }}/blender-renders
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}
+            ghcr.io/marquezmemo/marquez/${{ matrix.image }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=discovery
             type=sha,prefix=git-
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ./images/blender-renders
-          file: ./images/blender-renders/Dockerfile
+          context: .
+          file: ./${{ matrix.dockerfile }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
 
       - name: Final cleanup report
         if: always()
