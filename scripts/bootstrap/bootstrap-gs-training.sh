@@ -5,6 +5,8 @@ WORKSPACE_DIR="${WORKSPACE_DIR:-/workspace}"
 STACK_VERSION="${GS_STACK_VERSION:-DISCOVERY-1}"
 LOG_DIR="${WORKSPACE_DIR}/logs"
 
+/opt/pipeline/scripts/runtime/wait-for-workspace.sh
+
 mkdir -p \
   "${WORKSPACE_DIR}/envs" \
   "${WORKSPACE_DIR}/datasets" \
@@ -12,6 +14,8 @@ mkdir -p \
   "${WORKSPACE_DIR}/checkpoints" \
   "${WORKSPACE_DIR}/cache" \
   "${WORKSPACE_DIR}/tmp" \
+  "${WORKSPACE_DIR}/backups" \
+  "${WORKSPACE_DIR}/manifests" \
   "${LOG_DIR}"
 
 echo "GS_STACK_VERSION=${STACK_VERSION}" > "${WORKSPACE_DIR}/.gs-stack-version"

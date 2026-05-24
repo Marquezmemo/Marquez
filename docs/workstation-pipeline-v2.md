@@ -18,9 +18,12 @@ Every Pod writes:
 ```text
 /workspace/.stack-manifest.json
 /workspace/logs/stack-manifest-<stack>-<timestamp>.json
+/workspace/manifests/stack-manifest-<stack>-<timestamp>.json
 ```
 
 The manifest records detected GPU, NVIDIA driver, CUDA, Python, Torch, Blender/Nerfstudio, COLMAP, gsplat, tiny-cuda-nn, Sunshine, and other runtime details.
+
+Bootstrap and runtime scripts refuse to initialize until `/workspace` is mounted and writable.
 
 ### LOCKED
 
@@ -70,6 +73,8 @@ Expected layout:
 /workspace/checkpoints
 /workspace/cache
 /workspace/tmp
+/workspace/backups
+/workspace/manifests
 /workspace/logs
 ```
 
@@ -102,7 +107,15 @@ Expected layout:
 /workspace/assets
 /workspace/config
 /workspace/cache
+/workspace/backups
+/workspace/manifests
 /workspace/logs
+```
+
+Blender configuration is version-aware:
+
+```text
+/workspace/config/blender/5.1.2/
 ```
 
 Primary access is Sunshine + Moonlight. Kasm/noVNC is fallback-only and is not the target workstation UX.
@@ -120,8 +133,30 @@ Useful env vars:
 WORKSTATION_WIDTH=1920
 WORKSTATION_HEIGHT=1080
 WORKSTATION_DEPTH=24
+WORKSPACE_WAIT_TIMEOUT=120
 BLENDER_AUTOSTART=true
 ```
+
+## Reliability and Recovery
+
+- `/workspace` must be a mounted writable persistent volume before any bootstrap or runtime initialization.
+- Historical stack manifests are retained in `/workspace/manifests`.
+- Logs are retained in `/workspace/logs`.
+- Manual backup targets should use `/workspace/backups`.
+- Rollback is controlled and manifest-driven: recreate the Pod with a previous image tag and restore matching config/assets from the persistent volume or backup.
+
+## Sunshine Security
+
+Sunshine must not be treated as safe on unrestricted public endpoints.
+
+Minimum V1 posture:
+
+- keep Sunshine pairing/authentication enabled,
+- expose only required Sunshine ports,
+- prefer RunPod/private networking restrictions where available,
+- move to SSH tunnels, Tailscale, VPN, or private networking for sustained use.
+
+Advanced hardening is deferred until the workstation path is validated in RunPod.
 
 ## RunPod Smoke Tests
 

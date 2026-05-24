@@ -4,11 +4,15 @@ set -u
 STACK_NAME="${1:-unknown}"
 WORKSPACE_DIR="${WORKSPACE_DIR:-/workspace}"
 LOG_DIR="${WORKSPACE_DIR}/logs"
+MANIFEST_DIR="${WORKSPACE_DIR}/manifests"
 MANIFEST_PATH="${WORKSPACE_DIR}/.stack-manifest.json"
 TIMESTAMP="$(date -u +"%Y%m%dT%H%M%SZ")"
 MANIFEST_COPY="${LOG_DIR}/stack-manifest-${STACK_NAME}-${TIMESTAMP}.json"
+MANIFEST_HISTORY_COPY="${MANIFEST_DIR}/stack-manifest-${STACK_NAME}-${TIMESTAMP}.json"
 
-mkdir -p "${LOG_DIR}"
+/opt/pipeline/scripts/runtime/wait-for-workspace.sh
+
+mkdir -p "${LOG_DIR}" "${MANIFEST_DIR}"
 
 cmd_or_unknown() {
   local command="$1"
@@ -55,6 +59,12 @@ except Exception as exc:
     print(f"not-available: {exc}")
 PY
 )"
+workspace_mount="$(findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS "${WORKSPACE_DIR}" 2>/dev/null || echo "not-mounted")"
+workspace_writable="false"
+if touch "${WORKSPACE_DIR}/.manifest-write-test" 2>/dev/null; then
+  rm -f "${WORKSPACE_DIR}/.manifest-write-test"
+  workspace_writable="true"
+fi
 
 jq -n \
   --arg stack_name "${STACK_NAME}" \
@@ -78,6 +88,12 @@ jq -n \
   --arg tinycudann "${tinycudann_info:-not-detected}" \
   --arg smoke_result "${SMOKE_TEST_RESULT:-not-run}" \
   --arg smoke_log "${SMOKE_TEST_LOG:-not-set}" \
+  --arg workspace_dir "${WORKSPACE_DIR}" \
+  --arg workspace_mount "${workspace_mount}" \
+  --arg workspace_writable "${workspace_writable}" \
+  --arg blender_config_dir "${BLENDER_CONFIG_DIR:-not-set}" \
+  --arg backups_dir "${WORKSPACE_DIR}/backups" \
+  --arg manifests_dir "${MANIFEST_DIR}" \
   '{
     stack_name: $stack_name,
     phase: $phase,
@@ -86,6 +102,16 @@ jq -n \
     hostname: $hostname,
     os: $ubuntu,
     gpu: { name: $gpu, driver: $driver, cuda: $cuda },
+    workspace: {
+      path: $workspace_dir,
+      mount: $workspace_mount,
+      writable: $workspace_writable
+    },
+    config_paths: {
+      blender: $blender_config_dir,
+      backups: $backups_dir,
+      manifests: $manifests_dir
+    },
     runtimes: {
       python: $python,
       torch: $torch,
@@ -104,4 +130,5 @@ jq -n \
   }' > "${MANIFEST_PATH}"
 
 cp "${MANIFEST_PATH}" "${MANIFEST_COPY}"
-echo "Stack manifest written to ${MANIFEST_PATH} and ${MANIFEST_COPY}"
+cp "${MANIFEST_PATH}" "${MANIFEST_HISTORY_COPY}"
+echo "Stack manifest written to ${MANIFEST_PATH}, ${MANIFEST_COPY}, and ${MANIFEST_HISTORY_COPY}"
