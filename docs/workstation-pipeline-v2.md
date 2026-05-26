@@ -178,3 +178,24 @@ Advanced hardening is deferred until the workstation path is validated in RunPod
 - GPU render works.
 - NVENC appears in ffmpeg encoders.
 - `/workspace/.stack-manifest.json` exists.
+
+### Xorg Diagnostics
+
+The workstation starts in an Xorg-first sequence:
+
+- `/workspace` is validated first.
+- Xorg starts with verbose logs.
+- Openbox, Sunshine, and Blender start only after Xorg is stable and `xdpyinfo` works.
+- If Xorg fails, downstream processes are not launched.
+
+Expected Xorg diagnostic files:
+
+```text
+/workspace/logs/xorg.log
+/workspace/logs/xorg.stdout.log
+/workspace/logs/xorg.stderr.log
+/workspace/logs/xorg-ready.log
+/workspace/logs/xorg-diagnostics.log
+/workspace/logs/xorg-failure-summary.log
+/workspace/logs/workstation-session.log
+```

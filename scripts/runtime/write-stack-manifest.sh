@@ -88,6 +88,8 @@ jq -n \
   --arg tinycudann "${tinycudann_info:-not-detected}" \
   --arg smoke_result "${SMOKE_TEST_RESULT:-not-run}" \
   --arg smoke_log "${SMOKE_TEST_LOG:-not-set}" \
+  --arg xorg_failure_summary "${XORG_FAILURE_SUMMARY:-${LOG_DIR}/xorg-failure-summary.log}" \
+  --arg xorg_diagnostics_log "${XORG_DIAGNOSTICS_LOG:-${LOG_DIR}/xorg-diagnostics.log}" \
   --arg workspace_dir "${WORKSPACE_DIR}" \
   --arg workspace_mount "${workspace_mount}" \
   --arg workspace_writable "${workspace_writable}" \
@@ -125,7 +127,9 @@ jq -n \
     },
     smoke_tests: {
       result: $smoke_result,
-      log: $smoke_log
+      log: $smoke_log,
+      xorg_failure_summary: $xorg_failure_summary,
+      xorg_diagnostics_log: $xorg_diagnostics_log
     }
   }' > "${MANIFEST_PATH}"
 

@@ -42,6 +42,8 @@ fi
 SMOKE_TEST_RESULT="${SMOKE_TEST_RESULT}" \
 SMOKE_TEST_LOG="${SMOKE_TEST_LOG}" \
 BLENDER_CONFIG_DIR="${BLENDER_CONFIG_DIR}" \
+XORG_FAILURE_SUMMARY="${LOG_DIR}/xorg-failure-summary.log" \
+XORG_DIAGNOSTICS_LOG="${LOG_DIR}/xorg-diagnostics.log" \
   /opt/pipeline/scripts/runtime/write-stack-manifest.sh blender-workstation || true
 
 echo "Blender workstation bootstrap complete"

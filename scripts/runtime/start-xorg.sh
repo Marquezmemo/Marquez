@@ -6,6 +6,8 @@ WIDTH="${WORKSTATION_WIDTH:-1920}"
 HEIGHT="${WORKSTATION_HEIGHT:-1080}"
 DEPTH="${WORKSTATION_DEPTH:-24}"
 LOG_FILE="${WORKSPACE_DIR:-/workspace}/logs/xorg.log"
+STDOUT_LOG="${WORKSPACE_DIR:-/workspace}/logs/xorg.stdout.log"
+STDERR_LOG="${WORKSPACE_DIR:-/workspace}/logs/xorg.stderr.log"
 
 mkdir -p "$(dirname "${LOG_FILE}")" /etc/X11
 
@@ -33,10 +35,21 @@ Section "Screen"
 EndSection
 EOF
 
-exec Xorg ":${DISPLAY_ID}" \
+set +e
+Xorg ":${DISPLAY_ID}" \
   -noreset \
+  -verbose 6 \
+  -logverbose 6 \
   +extension GLX \
   +extension RANDR \
   +extension RENDER \
   -logfile "${LOG_FILE}" \
-  -config /etc/X11/xorg.conf
+  -config /etc/X11/xorg.conf \
+  > "${STDOUT_LOG}" \
+  2> "${STDERR_LOG}"
+status=$?
+set -e
+
+echo "Xorg exited with status ${status} at $(date -Is)" >> "${STDERR_LOG}"
+/opt/pipeline/scripts/runtime/diagnose-xorg.sh || true
+exit "${status}"

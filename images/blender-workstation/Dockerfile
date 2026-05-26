@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     file \
     jq \
+    kmod \
     libasound2 \
     libdbus-1-3 \
     libegl1 \
@@ -49,6 +50,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mesa-utils \
     mesa-vulkan-drivers \
     openbox \
+    procps \
     pulseaudio \
     rclone \
     supervisor \
