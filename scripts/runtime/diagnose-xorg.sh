@@ -31,6 +31,9 @@ collect_file() {
   section "environment"
   env | sort
 
+  section "xorg config summary"
+  collect_file "${LOG_DIR}/xorg-config-summary.log"
+
   section "processes"
   ps aux 2>&1 || true
 

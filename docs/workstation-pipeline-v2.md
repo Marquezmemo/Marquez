@@ -184,7 +184,7 @@ Advanced hardening is deferred until the workstation path is validated in RunPod
 The workstation starts in an Xorg-first sequence:
 
 - `/workspace` is validated first.
-- Xorg starts with verbose logs.
+- Xorg starts with verbose logs using the dummy display driver.
 - Openbox, Sunshine, and Blender start only after Xorg is stable and `xdpyinfo` works.
 - If Xorg fails, downstream processes are not launched.
 
@@ -197,6 +197,7 @@ Expected Xorg diagnostic files:
 /workspace/logs/xorg-ready.log
 /workspace/logs/xorg-diagnostics.log
 /workspace/logs/xorg-failure-summary.log
+/workspace/logs/xorg-config-summary.log
 /workspace/logs/workstation-session.log
 /workspace/logs/workstation-diagnostics.log
 /workspace/logs/workstation-failure-summary.log

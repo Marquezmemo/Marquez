@@ -19,6 +19,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BLENDER_STACK_VERSION=DISCOVERY-1 \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=all \
+    XORG_DRIVER_MODE=dummy \
     DISPLAY=:0 \
     WORKSPACE_DIR=/workspace
 
@@ -62,6 +63,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xauth \
     xinit \
     xserver-xorg-core \
+    xserver-xorg-video-dummy \
     xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
