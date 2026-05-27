@@ -53,6 +53,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     procps \
     pulseaudio \
     rclone \
+    iproute2 \
     supervisor \
     vulkan-tools \
     wget \

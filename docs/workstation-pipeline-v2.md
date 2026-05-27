@@ -198,4 +198,7 @@ Expected Xorg diagnostic files:
 /workspace/logs/xorg-diagnostics.log
 /workspace/logs/xorg-failure-summary.log
 /workspace/logs/workstation-session.log
+/workspace/logs/workstation-diagnostics.log
+/workspace/logs/workstation-failure-summary.log
+/workspace/logs/blender-gpu-smoke.log
 ```

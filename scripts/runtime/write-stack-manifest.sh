@@ -65,6 +65,14 @@ if touch "${WORKSPACE_DIR}/.manifest-write-test" 2>/dev/null; then
   rm -f "${WORKSPACE_DIR}/.manifest-write-test"
   workspace_writable="true"
 fi
+display_ready="false"
+if command -v xdpyinfo >/dev/null 2>&1 && xdpyinfo -display "${DISPLAY:-:0}" >/dev/null 2>&1; then
+  display_ready="true"
+fi
+nvenc_available="false"
+if ffmpeg -hide_banner -encoders 2>/dev/null | grep -qi nvenc; then
+  nvenc_available="true"
+fi
 
 jq -n \
   --arg stack_name "${STACK_NAME}" \
@@ -90,9 +98,15 @@ jq -n \
   --arg smoke_log "${SMOKE_TEST_LOG:-not-set}" \
   --arg xorg_failure_summary "${XORG_FAILURE_SUMMARY:-${LOG_DIR}/xorg-failure-summary.log}" \
   --arg xorg_diagnostics_log "${XORG_DIAGNOSTICS_LOG:-${LOG_DIR}/xorg-diagnostics.log}" \
+  --arg xorg_driver_mode "${XORG_DRIVER_MODE:-nvidia}" \
+  --argjson display_ready "${display_ready}" \
+  --argjson nvenc_available "${nvenc_available}" \
+  --arg sunshine_log "${SUNSHINE_LOG:-${LOG_DIR}/sunshine.log}" \
+  --arg blender_gpu_smoke_log "${BLENDER_GPU_SMOKE_LOG:-${LOG_DIR}/blender-gpu-smoke.log}" \
+  --arg workstation_diagnostics_log "${WORKSTATION_DIAGNOSTICS_LOG:-${LOG_DIR}/workstation-diagnostics.log}" \
   --arg workspace_dir "${WORKSPACE_DIR}" \
   --arg workspace_mount "${workspace_mount}" \
-  --arg workspace_writable "${workspace_writable}" \
+  --argjson workspace_writable "${workspace_writable}" \
   --arg blender_config_dir "${BLENDER_CONFIG_DIR:-not-set}" \
   --arg backups_dir "${WORKSPACE_DIR}/backups" \
   --arg manifests_dir "${MANIFEST_DIR}" \
@@ -104,6 +118,13 @@ jq -n \
     hostname: $hostname,
     os: $ubuntu,
     gpu: { name: $gpu, driver: $driver, cuda: $cuda },
+    display: {
+      xorg_driver_mode: $xorg_driver_mode,
+      ready: $display_ready
+    },
+    encoding: {
+      nvenc_available: $nvenc_available
+    },
     workspace: {
       path: $workspace_dir,
       mount: $workspace_mount,
@@ -129,7 +150,10 @@ jq -n \
       result: $smoke_result,
       log: $smoke_log,
       xorg_failure_summary: $xorg_failure_summary,
-      xorg_diagnostics_log: $xorg_diagnostics_log
+      xorg_diagnostics_log: $xorg_diagnostics_log,
+      sunshine_log: $sunshine_log,
+      blender_gpu_smoke_log: $blender_gpu_smoke_log,
+      workstation_diagnostics_log: $workstation_diagnostics_log
     }
   }' > "${MANIFEST_PATH}"
 
